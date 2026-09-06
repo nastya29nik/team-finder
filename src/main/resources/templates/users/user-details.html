@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'profile')}">
+<head>
+    <title th:text="${user.name + ' ' + user.surname}">Профиль пользователя</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/project_list.css">
+        <link rel="stylesheet" href="/css/profile.css">
+        <link rel="stylesheet" href="/css/skills.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="profile-container">
+    <div class="profile-header">
+        <div class="profile-info">
+            <img th:src="${user.avatar ?: '/images/default-avatar.png'}" alt="Аватар" class="profile-avatar">
+
+            <div class="profile-details">
+                <h2 class="profile-name" th:text="${user.name + ' ' + user.surname}">Имя Фамилия</h2>
+                <p class="profile-description"
+                   th:text="${user.about != null and !user.about.isBlank() ? user.about : 'Описание профиля пока не добавлено.'}">
+                    Описание профиля пока не добавлено.
+                </p>
+
+                <div class="profile-contacts">
+                    <span th:if="${user.email != null and !user.email.isBlank()}">
+                        <th:block th:replace="~{includes/svg/email.html}"></th:block>
+                        <span th:text="${user.email}">user@mail.ru</span>
+                    </span>
+                    <span th:if="${user.phone != null and !user.phone.isBlank()}">
+                        <th:block th:replace="~{includes/svg/phone.html}"></th:block>
+                        <span th:text="${user.phone}">+79990000000</span>
+                    </span>
+                    <span th:if="${user.githubUrl != null and !user.githubUrl.isBlank()}">
+                        <th:block th:replace="~{includes/svg/github.html}"></th:block>
+                        <a th:href="${user.githubUrl}" target="_blank">GitHub</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="#" class="black-button black-button-share share-button"
+               th:data-url="@{/users/{id}(id=${user.id})}">
+                <th:block th:replace="~{includes/svg/share.html}"></th:block>
+            </a>
+
+            <th:block th:if="${is_owner}">
+                <a href="/users/edit-profile" class="black-button">
+                    <th:block th:replace="~{includes/svg/pen.html}"></th:block>
+                    Редактировать
+                </a>
+                <a href="/projects/create-project" class="black-button">
+                    <th:block th:replace="~{includes/svg/plus.html}"></th:block>
+                    Добавить проект
+                </a>
+            </th:block>
+        </div>
+    </div>
+
+    <h3 th:text="'Проекты (' + ${user.ownedProjects.size()} + ')'">Проекты (0)</h3>
+
+    <div class="collapsed-project-grid">
+        <th:block th:if="${!user.ownedProjects.empty}">
+            <div th:each="project : ${user.ownedProjects}" class="collapsed-project-card">
+                <div class="collapsed-project-card-header">
+                    <h4><a th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}">Название проекта</a></h4>
+                    <span class="project-status-black"
+                          th:text="${project.status == 'open' ? 'Открыт' : (project.status == 'closed' ? 'Закрыт' : project.status)}">
+                        Открыт
+                    </span>
+                </div>
+                <div class="collapsed-project-card-body">
+                    <div class="collapsed-project-card-description">
+                        <p class="project-card-description"
+                           th:text="${#strings.abbreviate(project.description, 150)}">Описание проекта...</p>
+                    </div>
+                    <div class="collapsed-project-card-footer">
+                        <p class="project-date"
+                           th:text="${#temporals.format(project.createdAt, 'dd.MM.yyyy')}">01.01.2026</p>
+
+                        <div class="project-participants" th:with="count=${project.participants.size()}">
+                            <th:block th:replace="~{includes/svg/participants.html}"></th:block>
+                            <span th:text="${count}">1</span>
+                            <span th:text="${count % 10 == 1 and count % 100 != 11 ? 'участник' : (count % 10 >= 2 and count % 10 <= 4 and (count % 100 < 10 or count % 100 >= 20) ? 'участника' : 'участников')}">
+                                участников
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <p th:if="${user.ownedProjects.empty}">Пока нет проектов</p>
+    </div>
+</div>
+
+</body>
+</html>

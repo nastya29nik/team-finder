@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content, extra_css, page_id)">
+<head>
+    <meta charset="UTF-8" />
+    <title th:replace="${title}">TeamFinder</title>
+
+    <!-- Подключаем базовые стили из папки static -->
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css">
+
+    <!-- Сюда вставятся дополнительные стили конкретной страницы -->
+    <th:block th:replace="${extra_css}"></th:block>
+</head>
+<body th:data-page="${page_id != null ? page_id : 'default'}">
+
+<!-- Подключаем хедер (шапку) сайта -->
+<div th:insert="~{includes/header.html}"></div>
+
+<!-- Сюда вставится основной контент страницы -->
+<main th:replace="${content}"></main>
+
+<!-- Подключаем базовые скрипты из папки static -->
+<script src="/js/utils.js"></script>
+<script src="/js/share.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/skills.js"></script>
+<script src="/js/projects.js"></script>
+</body>
+</html>

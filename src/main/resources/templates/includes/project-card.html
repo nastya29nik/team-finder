@@ -1,0 +1,45 @@
+<div class="project-card" xmlns:th="http://www.thymeleaf.org">
+    <div class="project-card-header-title">
+        <div class="project-card-header">
+            <div class="project-owner-grid">
+                <!-- Аватарка автора -->
+                <img th:src="${project.owner.avatar ?: '/images/default-avatar.png'}" alt="Аватар" class="avatar">
+
+                <div class="project-owner">
+                    <!-- Ссылка на профиль автора -->
+                    <a th:href="@{/users/{id}(id=${project.owner.id})}"
+                       th:text="${project.owner.name + ' ' + project.owner.surname}">Имя Фамилия</a>
+                    <!-- Дата создания в формате ДД.ММ.ГГГГ -->
+                    <small class="project-date"
+                           th:text="${#temporals.format(project.createdAt, 'dd.MM.yyyy')}">01.01.2026</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Название проекта со ссылкой на его страницу -->
+        <h3 class="project-card-title">
+            <a th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}">Название проекта</a>
+        </h3>
+    </div>
+
+    <!-- Описание, обрезанное до 150 символов -->
+    <p class="project-card-description"
+       th:text="${#strings.abbreviate(project.description, 150)}">Описание проекта...</p>
+
+    <div class="project-card-footer">
+        <!-- Статус проекта -->
+        <span class="project-status-black"
+              th:text="${project.status == 'open' ? 'Открыт' : (project.status == 'closed' ? 'Закрыт' : project.status)}">
+            Открыт
+        </span>
+
+        <!-- Количество участников с правильным русским склонением -->
+        <div class="project-participants" th:with="count=${project.participants.size()}">
+            <th:block th:replace="~{includes/svg/participants.html}"></th:block>
+            <span th:text="${count}">1</span>
+            <span th:text="${count % 10 == 1 and count % 100 != 11 ? 'участник' : (count % 10 >= 2 and count % 10 <= 4 and (count % 100 < 10 or count % 100 >= 20) ? 'участника' : 'участников')}">
+                участник
+            </span>
+        </div>
+    </div>
+</div>

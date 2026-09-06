@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'project')}">
+<head>
+    <title th:text="${project.name}">Детали проекта</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/project_details.css">
+        <link rel="stylesheet" href="/css/skills.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="project-container">
+    <div class="project-card">
+        <div class="project-card-header">
+            <a th:href="@{/users/{id}(id=${project.owner.id})}">
+                <div class="project-card-header-left">
+                    <img th:src="${project.owner.avatar ?: '/images/default-avatar.png'}"
+                         alt="Аватар автора" class="project-author-avatar">
+                    <div class="project-meta">
+                        <span class="project-author"
+                              th:text="${project.owner.name + ' ' + project.owner.surname}">Имя Фамилия</span>
+                        <span class="project-date"
+                              th:text="${#temporals.format(project.createdAt, 'dd.MM.yyyy')}">01.01.2026</span>
+                    </div>
+                </div>
+            </a>
+            <div class="project-card-header-right">
+                <span class="project-status-black"
+                      th:text="${project.status == 'open' ? 'Открыт' : (project.status == 'closed' ? 'Закрыт' : project.status)}">
+                    Открыт
+                </span>
+            </div>
+        </div>
+
+        <div class="project-card-body">
+            <h2 class="project-title" th:text="${project.name}">Название проекта</h2>
+            <p class="project-description" th:text="${project.description}">Описание проекта...</p>
+
+            <p class="project-link" th:if="${project.githubUrl != null and !project.githubUrl.isBlank()}">
+                <th:block th:replace="~{includes/svg/github.html}"></th:block>
+                <a th:href="${project.githubUrl}" target="_blank">Репозиторий на GitHub</a>
+            </p>
+        </div>
+
+        <div class="project-actions">
+            <a href="#" class="black-button black-button-share share-button"
+               th:data-url="@{/projects/{id}(id=${project.id})}">
+                <th:block th:replace="~{includes/svg/share.html}"></th:block>
+            </a>
+
+            <th:block th:if="${is_owner}">
+                <a th:href="@{/projects/{id}/edit(id=${project.id})}" class="black-button">
+                    <th:block th:replace="~{includes/svg/pen.html}"></th:block>
+                    Редактировать
+                </a>
+                <button th:if="${project.status == 'open'}"
+                        class="black-button" id="complete-project-btn"
+                        th:data-id="${project.id}">
+                    Завершить проект
+                </button>
+            </th:block>
+
+            <th:block th:if="${!is_owner}">
+                <th:block sec:authorize="isAuthenticated()">
+                    <button id="participate-btn" class="black-button"
+                            th:data-project="${project.id}"
+                            th:data-user-id="${#authentication.principal.user.id}"
+                            th:data-user-name="${#authentication.principal.user.name + ' ' + #authentication.principal.user.surname}"
+                            th:data-user-avatar="${#authentication.principal.user.avatar ?: '/images/default-avatar.png'}"
+                            th:text="${is_participant ? 'Отказаться от участия' : 'Участвовать'}">
+                        Участвовать
+                    </button>
+                </th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="project-skills">
+        <h3>Необходимые навыки</h3>
+        <div id="skills-container" class="skills-container" th:data-project-id="${project.id}">
+            <th:block th:if="${!project.skills.empty}">
+                <span th:each="skill : ${project.skills}" class="skill-chip" th:data-id="${skill.id}">
+                    <span th:text="${skill.name}">Навык</span>
+                    <button th:if="${is_owner}" type="button" class="remove-skill-btn" aria-label="Удалить" title="Удалить">×</button>
+                </span>
+            </th:block>
+
+            <span th:if="${project.skills.empty}" class="skill-empty">Навыки не указаны</span>
+
+            <button th:if="${is_owner}" type="button" id="add-skill-btn" class="add-skill-btn">+ Добавить навык</button>
+        </div>
+
+        <div id="skill-input-wrapper" class="skill-input-wrapper hidden">
+            <input type="text" id="skill-input" placeholder="Введите навык..." autocomplete="off"/>
+            <ul id="skill-suggestions" class="skill-suggestions hidden"></ul>
+        </div>
+    </div>
+
+    <div class="project-participants-card">
+        <h3>Участники проекта (<span id="participants-count" th:text="${project.participants.size()}">1</span>)</h3>
+        <div id="participants-list" class="participants-list">
+            <a th:each="member : ${project.participants}"
+               th:href="@{/users/{id}(id=${member.id})}"
+               th:id="'participant-' + ${member.id}">
+                <div class="participant-item">
+                    <img th:src="${member.avatar ?: '/images/default-avatar.png'}" alt="Аватар" class="participant-avatar">
+                    <div class="participant-info">
+                        <span class="participant-name" th:text="${member.name + ' ' + member.surname}">Имя Фамилия</span>
+                        <span class="participant-role"
+                              th:text="${member.id == project.owner.id ? 'Автор проекта' : 'Участник'}">
+                            Автор проекта
+                        </span>
+                    </div>
+                </div>
+            </a>
+            <p th:if="${project.participants.empty}" id="no-participants">Пока нет участников</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'project-create')}">
+<head>
+    <title th:text="${is_edit ? 'Редактирование проекта' : 'Создание проекта'}">Создание проекта</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/auth.css">
+        <link rel="stylesheet" href="/css/profile_edit.css">
+        <link rel="stylesheet" href="/css/create-project.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="project-create-container">
+    <h2 class="form-title" th:text="${is_edit ? 'Редактирование проекта' : 'Создание проекта'}">Создание проекта</h2>
+
+    <form method="post" th:object="${form}" class="project-create-form">
+
+        <!-- Название проекта -->
+        <div class="form-field">
+            <label for="name">Название проекта</label>
+            <input type="text" id="name" th:field="*{name}" placeholder="Название проекта" required>
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red; font-size: 14px; margin-top: 5px;"></p>
+        </div>
+
+        <!-- Описание проекта -->
+        <div class="form-field">
+            <label for="description">Описание проекта</label>
+            <textarea id="description" th:field="*{description}" rows="5" placeholder="Опишите суть проекта и кого вы ищете в команду"></textarea>
+            <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" style="color: red; font-size: 14px; margin-top: 5px;"></p>
+        </div>
+
+        <!-- Ссылка на GitHub -->
+        <div class="form-field">
+            <label for="githubUrl">Ссылка на GitHub</label>
+            <input type="text" id="githubUrl" th:field="*{githubUrl}" placeholder="https://github.com/ваш-профиль/ваш-репозиторий">
+            <p th:if="${#fields.hasErrors('githubUrl')}" th:errors="*{githubUrl}" style="color: red; font-size: 14px; margin-top: 5px;"></p>
+        </div>
+
+        <!-- Статус проекта -->
+        <div class="form-field">
+            <label for="status">Статус проекта</label>
+            <select id="status" th:field="*{status}">
+                <option value="open">Открыт</option>
+                <option value="closed">Закрыт</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <a href="/projects/list" class="cancel-button">Отмена</a>
+            <button type="submit" class="save-button" th:text="${is_edit ? 'Сохранить' : 'Опубликовать'}">Опубликовать</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

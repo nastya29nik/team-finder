@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'participants')}">
+<head>
+    <title>Участники</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/project_list.css">
+        <link rel="stylesheet" href="/css/participants.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="project-container">
+    <div class="project-header">
+        <div>
+            <h1 class="project-title">Участники платформы</h1>
+            <p class="project-subtitle">Познакомьтесь с участниками и найдите единомышленников</p>
+        </div>
+    </div>
+
+    <th:block th:if="${!participants.empty}">
+        <div class="participants-grid">
+            <div th:each="participant : ${participants.content}" class="participant-card">
+                <div class="participant-card-header">
+                    <img th:src="${participant.avatar ?: '/images/default-avatar.png'}"
+                         alt="Аватар участника" class="participant-avatar">
+                </div>
+
+                <div class="participant-info">
+                    <h3 class="participant-name"
+                        th:text="${participant.name + ' ' + participant.surname}">Имя Фамилия</h3>
+                    <p class="participant-role"
+                       th:text="${#strings.abbreviate(participant.about ?: '', 80)}">О себе...</p>
+                </div>
+
+                <div class="participant-card-footer">
+                    <a th:href="@{/users/{id}(id=${participant.id})}" class="white-button">
+                        <th:block th:replace="~{includes/svg/eye.html}"></th:block>
+                        Посмотреть контакты
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination" th:if="${participants.totalPages > 1}">
+            <a th:if="${participants.hasPrevious()}"
+               th:href="@{/users/list(page=${participants.number - 1})}"
+               class="page-btn">←</a>
+
+            <th:block th:each="num : ${#numbers.sequence(0, participants.totalPages - 1)}">
+                <span th:if="${participants.number == num}" class="page-btn active" th:text="${num + 1}"></span>
+                <a th:if="${participants.number != num}"
+                   th:href="@{/users/list(page=${num})}"
+                   class="page-btn" th:text="${num + 1}"></a>
+            </th:block>
+
+            <a th:if="${participants.hasNext()}"
+               th:href="@{/users/list(page=${participants.number + 1})}"
+               class="page-btn">→</a>
+        </div>
+    </th:block>
+
+    <th:block th:if="${participants.empty}">
+        <div th:insert="~{includes/empty-project-card.html}"></div>
+    </th:block>
+</div>
+
+</body>
+</html>

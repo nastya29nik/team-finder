@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'auth')}">
+<head>
+    <title>Регистрация</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/auth.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="auth-card">
+    <h2>Регистрация</h2>
+
+    <form th:action="@{/users/register}" th:object="${form}" method="post">
+        <!-- Поля имени и фамилии в одну строчку -->
+        <div class="name-fields">
+            <div>
+                <label for="name">Имя</label>
+                <input type="text" id="name" th:field="*{name}" placeholder="Имя" required>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red;"></p>
+            </div>
+            <div>
+                <label for="surname">Фамилия</label>
+                <input type="text" id="surname" th:field="*{surname}" placeholder="Фамилия" required>
+                <p th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" style="color: red;"></p>
+            </div>
+        </div>
+
+        <!-- Поле Email -->
+        <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{email}" placeholder="Email" required>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red;"></p>
+        </div>
+
+        <!-- Поле Пароль -->
+        <div class="form-field">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="Пароль" required>
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red;"></p>
+        </div>
+
+        <!-- Ошибка, если такой email уже занят -->
+        <p th:if="${error != null}" th:text="${error}" style="color: red; margin-bottom: 10px;"></p>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <p class="auth-link">Уже есть аккаунт? <a href="/users/login">Войти</a></p>
+</div>
+
+</body>
+</html>

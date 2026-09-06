@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'profile-edit')}">
+<head>
+    <title>Редактирование профиля</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/auth.css">
+        <link rel="stylesheet" href="/css/profile_edit.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="profile-edit-container">
+    <h2 class="form-title">Редактирование профиля</h2>
+
+    <form th:action="@{/users/edit-profile}" th:object="${form}" method="post" enctype="multipart/form-data" class="profile-edit-form">
+
+        <div class="avatar-upload">
+            <div class="avatar-preview">
+                <img th:src="${user.avatar ?: '/images/default-avatar.png'}" alt="Аватар" id="avatar-preview-img">
+                <div class="overlay">
+                    <button type="button" onclick="document.getElementById('id_avatar').click()">Заменить</button>
+                </div>
+            </div>
+
+            <input type="file" id="id_avatar" name="avatar" accept="image/*" style="display: none;" onchange="previewAvatar(this)">
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label for="name">Имя</label>
+                <input type="text" id="name" th:field="*{name}" placeholder="Имя" required>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red; font-size: 13px;"></p>
+            </div>
+            <div class="form-field">
+                <label for="surname">Фамилия</label>
+                <input type="text" id="surname" th:field="*{surname}" placeholder="Фамилия" required>
+                <p th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}" style="color: red; font-size: 13px;"></p>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label for="about">О себе</label>
+            <textarea id="about" th:field="*{about}" rows="4" placeholder="Расскажите о себе, ваших навыках и опыте"></textarea>
+            <p th:if="${#fields.hasErrors('about')}" th:errors="*{about}" style="color: red; font-size: 13px;"></p>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label for="phone">Номер телефона (+7... или 8...)</label>
+                <input type="text" id="phone" th:field="*{phone}" placeholder="+79990000000" required>
+                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" style="color: red; font-size: 13px;"></p>
+            </div>
+            <div class="form-field">
+                <label for="githubUrl">Ссылка на GitHub</label>
+                <input type="text" id="githubUrl" th:field="*{githubUrl}" placeholder="https://github.com/username">
+                <p th:if="${#fields.hasErrors('githubUrl')}" th:errors="*{githubUrl}" style="color: red; font-size: 13px;"></p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a th:href="@{/users/{id}(id=${user.id})}" class="cancel-button">Отмена</a>
+            <button type="submit" class="save-button">Сохранить</button>
+        </div>
+    </form>
+
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview-img').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</div>
+
+</body>
+</html>

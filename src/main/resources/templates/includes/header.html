@@ -1,0 +1,70 @@
+<div id="sidebarOverlay" class="sidebar-overlay" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></div>
+<header class="site-header" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="container">
+        <div class="header-content">
+            <a href="/projects/list" class="logo-link">TeamFinder</a>
+
+            <nav class="main-nav">
+                <a href="/projects/list" class="nav-link">
+                    <th:block th:replace="~{includes/svg/home.html}"></th:block>
+                    <p>Главная</p>
+                </a>
+                <a href="/users/list" class="nav-link">
+                    <th:block th:replace="~{includes/svg/participants.html}"></th:block>
+                    <p>Участники</p>
+                </a>
+            </nav>
+
+            <div class="user-actions">
+                <!-- Блок для АВТОРИЗОВАННОГО пользователя -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <a href="/projects/create-project" class="button nav-link black">
+                        <th:block th:replace="~{includes/svg/plus.html}"></th:block>
+                        <p>Создать проект</p>
+                    </a>
+                    <a class="user-menu nav-link">
+                        <img th:src="${#authentication.principal.user.avatar}" alt="Аватар" class="avatar">
+                        <span class="username"
+                              th:text="${#authentication.principal.user.name + ' ' + #authentication.principal.user.surname}">
+                            Имя Фамилия
+                        </span>
+                    </a>
+                </th:block>
+
+                <!-- Блок для ГОСТЯ (не авторизован) -->
+                <th:block sec:authorize="!isAuthenticated()">
+                    <button class="button button-login nav-link" onclick="window.location.href='/users/login'">
+                        <th:block th:replace="~{includes/svg/login.html}"></th:block>
+                        <p>Войти</p>
+                    </button>
+                    <button class="button button-register nav-link black" onclick="window.location.href='/users/register'">
+                        <th:block th:replace="~{includes/svg/register.html}"></th:block>
+                        <p>Регистрация</p>
+                    </button>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Выпадающее боковое меню пользователя -->
+<div id="userSidebar" class="user-sidebar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" sec:authorize="isAuthenticated()">
+    <div class="sidebar-content">
+        <a href="/users/profile">
+            <span><th:block th:replace="~{includes/svg/profile.html}"></th:block> Мой профиль</span>
+        </a>
+        <a href="/users/edit-profile">
+            <span><th:block th:replace="~{includes/svg/settings.html}"></th:block> Редактировать профиль</span>
+        </a>
+        <a href="/users/change-password">
+            <span><th:block th:replace="~{includes/svg/lock.html}"></th:block> Сменить пароль</span>
+        </a>
+        <a href="#" class="share-button">
+            <th:block th:replace="~{includes/svg/share.html}"></th:block> Поделиться профилем
+        </a>
+        <hr class="sidebar-divider">
+        <a href="/users/logout">
+            <span style="color: #e7000b;"><th:block th:replace="~{includes/svg/leave.html}"></th:block> Выйти</span>
+        </a>
+    </div>
+</div>

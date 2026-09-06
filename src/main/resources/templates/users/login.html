@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::content}, ~{::extra_css}, 'auth')}">
+<head>
+    <title>Вход</title>
+    <th:block th:fragment="extra_css">
+        <link rel="stylesheet" href="/css/auth.css">
+    </th:block>
+</head>
+<body>
+
+<div th:fragment="content" class="auth-card">
+    <h2>Вход в систему</h2>
+
+    <form th:action="@{/users/login}" method="post">
+        <!-- Ошибка при неверном логине или пароле -->
+        <p th:if="${param.error}" style="color: red; margin-bottom: 15px;">Неверный email или пароль</p>
+
+        <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+        </div>
+
+        <div class="form-field">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" placeholder="Пароль" required>
+        </div>
+
+        <button type="submit">Войти</button>
+    </form>
+
+    <p class="auth-link">Нет аккаунта? <a href="/users/register">Зарегистрироваться</a></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<div class="empty-project-card not-favorite" xmlns:th="http://www.thymeleaf.org">
+    <!-- Иконка сердечка -->
+    <th:block th:replace="~{includes/svg/heart.html}"></th:block>
+
+    <!-- Заголовок заглушки -->
+    <h3 th:text="${empty_title ?: 'Пока нет проектов'}">Пока нет проектов</h3>
+
+    <!-- Текст сообщения -->
+    <p th:text="${empty_message ?: 'Создавайте проекты и делитесь ими с другими пользователями!'}">
+        Создавайте проекты и делитесь ими с другими пользователями!
+    </p>
+
+    <!-- Ссылка-кнопка вместо запрещенного onclick -->
+    <a th:href="${button_link ?: '/projects/create-project'}"
+       class="black-button"
+       th:text="${button_text ?: '+ Создать проект'}">
+        + Создать проект
+    </a>
+</div>
